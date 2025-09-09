@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+    directUrl      = env("DIRECT_URL")
+
+}
+
+model user{
+  id String @id @default(uuid())
+  name String
+  email String @unique
+  image String
+ emailVerified  DateTime? 
+ account account[]
+ session session[]
+ message message[]
+ chat chat[]
+ document document[]
+}
+model account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user user @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+}
+
+model session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user user @relation(fields: [userId], references: [id])
+}
+model chat{
+    id           String   @id @default(uuid())
+    userId String
+    name String
+    message message[]
+    user user @relation(fields: [userId], references: [id])
+    document document[]
+    category Category
+    updatedAt DateTime @updatedAt
+    createdAt DateTime            @default(now())
+}
+enum Category{
+  healthcare
+  business
+  legal
+  education
+}
+model message {
+    id           String   @id @default(uuid())
+    userId String
+    chatId String
+    role Role
+    parts Json
+    
+    user user @relation(fields: [userId], references: [id])
+    createdAt DateTime              @default(now())
+    chat chat @relation(fields: [chatId], references: [id])
+}
+enum Role{
+  user
+  assistant
+  system
+}
+model document {
+    id        String                @id @default(dbgenerated("gen_random_uuid()"))
+    userId    String
+    chatId    String
+    chat chat @relation(fields: [chatId],references: [id])
+
+    user      user                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+    content   String?
+    embedding Unsupported("vector")
+    metadata  Json?
+    createdAt DateTime              @default(now())
+}
+
