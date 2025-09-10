@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -23,4 +24,34 @@ export async function POST(req: NextRequest) {
   if (!prevChat) {
     return NextResponse.json({ messages: "upload a doc to start chating" });
   }
+  let userMsg = null;
+
+  let assistantMsg = null;
+  if (messages[messages.length - 1].role === "user") {
+    userMsg = messages[messages.length - 1];
+  }
+  if (messages[messages.length - 2].role === "assistant") {
+    assistantMsg = messages[messages.length - 2];
+  }
+  await prisma.message.create({
+    data: {
+      id: userMsg.id,
+      chatId,
+      userId,
+      role: userMsg.role,
+      parts: userMsg.parts,
+    },
+  });
+  await prisma.message.create({
+    data: {
+      id: assistantMsg.id,
+      chatId,
+      userId,
+      role: assistantMsg.role,
+      parts: assistantMsg.parts,
+    },
+  });
+  return NextResponse.json({
+    message: "Messages  created successfully",
+  });
 }
