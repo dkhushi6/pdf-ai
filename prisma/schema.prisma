@@ -60,16 +60,10 @@ model chat{
     message message[]
     user user @relation(fields: [userId], references: [id])
     document document[]
-    category Category
     updatedAt DateTime @updatedAt
     createdAt DateTime            @default(now())
 }
-enum Category{
-  healthcare
-  business
-  legal
-  education
-}
+
 model message {
     id           String   @id @default(uuid())
     userId String
