@@ -8,6 +8,10 @@ const Upload = ({ chatId }: { chatId: string }) => {
     if (!file) {
       return null;
     }
+    if (!chatId) {
+      console.error("Chat id not found in upload");
+    }
+    console.log("chatid from upload is", chatId);
     const formData = new FormData();
     formData.append("file", file);
     formData.append("chatId", chatId);

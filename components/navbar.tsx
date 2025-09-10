@@ -11,6 +11,9 @@ const Navbar = () => {
   return (
     <div className="flex justify-between border p-2">
       <div>PDF-AI</div>
+      <Link href="/chat/new" className={buttonVariants({ variant: "outline" })}>
+        New chat
+      </Link>
       <div>
         {session?.user?.id ? (
           <div>

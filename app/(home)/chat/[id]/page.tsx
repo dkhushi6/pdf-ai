@@ -27,7 +27,7 @@ const page = () => {
       <div>
         <Upload chatId={chatId} />
 
-        <ChatInterface />
+        <ChatInterface chatId={chatId} />
       </div>
     );
 };
