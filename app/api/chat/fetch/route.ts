@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
   const { chatId } = await req.json();
   const userChat = await prisma.chat.findMany({
     where: { userId, id: chatId },
+    include: { message: true },
   });
   if (!userChat) {
     return NextResponse.json({ message: "chat doesn't exist for user " });

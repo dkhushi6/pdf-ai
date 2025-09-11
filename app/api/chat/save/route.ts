@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
   if (messages[messages.length - 2].role === "assistant") {
     assistantMsg = messages[messages.length - 2];
   }
-  await prisma.message.create({
+  const user = await prisma.message.create({
     data: {
       id: userMsg.id,
       chatId,
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       parts: userMsg.parts,
     },
   });
-  await prisma.message.create({
+  const assistant = await prisma.message.create({
     data: {
       id: assistantMsg.id,
       chatId,
@@ -53,5 +53,7 @@ export async function POST(req: NextRequest) {
   });
   return NextResponse.json({
     message: "Messages  created successfully",
+    user,
+    assistant,
   });
 }
