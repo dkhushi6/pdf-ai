@@ -58,7 +58,7 @@ export async function POST(req: Request) {
 
          If the context does not contain the answer, say so honestly. Do not make up information.
 
-         Keep the answer short, relevant, and helpful.
+         Keep the answer short, relevant, and helpful. and dont give answer in markdown
 
          Context:
          ${context}

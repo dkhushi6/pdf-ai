@@ -8,7 +8,7 @@ export default function DashHero() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center text-center  px-4">
+    <div className="mt-60 flex flex-col items-center justify-center text-center  px-4">
       <div className="flex items-center justify-center mb-6">
         <div className="p-4 rounded-full bg-muted">
           <BookOpen className="w-16 h-16 text-primary" />
@@ -28,7 +28,7 @@ export default function DashHero() {
       <Button
         size="lg"
         className="mt-8 px-8 py-6 text-lg rounded-xl shadow-md hover:scale-105 transition"
-        onClick={() => router.push("/chat")}
+        onClick={() => router.push("/chat/new")}
       >
         <LucidePlus />
         Start Conversation
