@@ -9,7 +9,29 @@ export async function GET() {
     return NextResponse.json({ message: "Login to start" });
   }
   const userId = session?.user?.id;
-  const userChats = await prisma.chat.findMany({ where: { userId } });
+  const userChats = await prisma.chat.findMany({
+    where: { userId },
+    include: {
+      document: {
+        select: {
+          id: true,
+          content: true,
+          metadata: true,
+          createdAt: true,
+        },
+      },
+      message: {
+        orderBy: { createdAt: "asc" },
+        select: {
+          id: true,
+          role: true,
+          parts: true,
+          createdAt: true,
+        },
+      },
+    },
+    orderBy: { updatedAt: "desc" },
+  });
   if (!userChats) {
     return NextResponse.json({ message: "chat doesn't exist for user " });
   }

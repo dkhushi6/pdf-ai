@@ -2,7 +2,6 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, UIMessage } from "ai";
-import { send } from "node:process";
 import { useEffect, useState } from "react";
 import axios from "axios";
 type ChatInterfaceProps = {
@@ -19,31 +18,21 @@ export default function ChatInterface({ chatId, oldMsg }: ChatInterfaceProps) {
     }),
     onFinish: async (message) => {
       if (!chatId) {
-        console.log("chatId from usechat", chatId);
-
         return;
       } else {
-        console.log("chatId from usechat", chatId);
-        console.log("message from usechat", message.messages);
-        const res = await axios.post("/api/chat/save", {
+        await axios.post("/api/chat/save", {
           messages: message.messages,
           chatId,
         });
-        console.log(res.data);
       }
     },
   });
   useEffect(() => {
     if (!oldMsg) {
-      console.log("THIS IS A NEW CHAT");
       return;
     }
     if (oldMsg.length > 0) {
-      console.log("oldchats from chatInterface:", oldMsg);
-      console.log("oldchats from category:", oldMsg);
-
       setMessages(oldMsg);
-      console.log("messages from setmessages", messages);
     }
   }, [oldMsg, setMessages]);
   return (

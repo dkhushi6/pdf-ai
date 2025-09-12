@@ -1,9 +1,9 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { openai } from "@ai-sdk/openai";
+import { google } from "@ai-sdk/google";
 import { streamText, UIMessage, convertToModelMessages } from "ai";
 import { NextResponse } from "next/server";
-import { OpenAIEmbeddings } from "@langchain/openai";
+import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import pool from "@/lib/pool";
 
 export async function POST(req: Request) {
@@ -14,10 +14,8 @@ export async function POST(req: Request) {
   const userId = session?.user?.id;
   const body = await req.json();
   const { messages }: { messages: UIMessage[] } = body;
-  console.log(messages);
 
   const { chatId } = body;
-  console.log("chatid from api", chatId);
   if (!messages) {
     return NextResponse.json({ message: "msges not found in backend " });
   }
@@ -36,16 +34,13 @@ export async function POST(req: Request) {
   if (messages[0].parts[0].type === "text") {
     query = messages[0].parts[0].text;
   }
-  console.log("query is ", query);
   //creating embeding for the query
 
-  const embeddings = await new OpenAIEmbeddings({
-    apiKey: process.env.OPENAI_API_KEY,
+  const embeddings = await new GoogleGenerativeAIEmbeddings({
+    model: "text-embedding-004",
   }).embedQuery(query);
-  console.log("query created into embeding");
   //doing semantic search
   const joinEmbed = `[${embeddings.join(",")}]`;
-  console.log(joinEmbed);
   const results = await pool.query(
     `SELECT content 
    FROM "document" 
@@ -54,11 +49,10 @@ export async function POST(req: Request) {
    LIMIT 5`,
     [chatId, userId, joinEmbed]
   );
-  console.log("SEMENTIC SEARCH DONE");
   const context = results.rows.map((r) => r.content).join("\n\n");
 
   const result = streamText({
-    model: openai("gpt-4o"),
+    model: google("gemini-2.5-flash"),
     messages: convertToModelMessages(messages),
     system: `You are an expert assistant. Use the following context to answer the user's question as clearly and concisely as possible.
 

@@ -3,8 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
-import { OpenAIEmbeddings } from "@langchain/openai";
 import pool from "@/lib/pool";
+import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -53,8 +53,9 @@ export async function POST(req: NextRequest) {
   const text = chunk.map((doc) => doc.pageContent);
   //embeddings
 
-  const embeddings = await new OpenAIEmbeddings().embedDocuments(text);
-  console.log(embeddings);
+  const embeddings = await new GoogleGenerativeAIEmbeddings({
+    model: "text-embedding-004",
+  }).embedDocuments(text);
   // saving it in the database
   await Promise.all(
     chunk.map(async (doc, i) => {
